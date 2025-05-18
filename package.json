@@ -1,0 +1,21 @@
+{
+  "name": "com.1506022022.field_editor_tool",
+  "version": "1.0.0",
+  "displayName": "FieldEditorTool",
+  "description": "...",
+  "unity": "2023.2",
+  "unityRelease": "0b5",
+  "documentationUrl": "https://github.com/1506022022/FieldEditorTool/blob/main/README.md",
+  "changelogUrl": "https://github.com/1506022022/FieldEditorTool/blob/main/README.md",
+  "licensesUrl": "https://github.com/1506022022/FieldEditorTool/blob/main/LICENSE",
+  "dependencies": {
+ },
+ "keywords": [
+    "FieldEditorTool"
+  ],
+  "author": {
+    "name": "1506022022",
+    "email": "vmap313@gmail.com",
+    "url": "https://github.com/1506022022/FieldEditorTool.git"
+  }
+}
