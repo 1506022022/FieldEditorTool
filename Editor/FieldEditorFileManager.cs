@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace FieldEditorTool
@@ -17,9 +18,16 @@ namespace FieldEditorTool
             }
             File.WriteAllText(path, json);
         }
-        void ReadFile() => OnClickReadButton?.Invoke(FieldEditorSettings.Instance.SavePath);
-        void SaveFile() => OnClickSaveButton?.Invoke();
-        void NewFile() { }
+        void ReadFile()
+        {
+            FieldEditorSettings.Instance.SavePath = EditorUtility.OpenFilePanel("Open Json", FieldEditorSettings.Instance.SavePath, "txt,json");
+            OnClickReadButton?.Invoke(FieldEditorSettings.Instance.SavePath);
+        }
+        void SaveFile()
+        {
+            FieldEditorSettings.Instance.SavePath = EditorUtility.OpenFilePanel("Save Json", FieldEditorSettings.Instance.SavePath, "txt,json");
+            OnClickSaveButton?.Invoke();
+        }
         void IFieldEditorUI.OnGUI()
         {
             GUILayout.FlexibleSpace();
@@ -31,10 +39,6 @@ namespace FieldEditorTool
             if (Style.Button(nameof(SaveFile)))
             {
                 SaveFile();
-            }
-            if (Style.Button(nameof(NewFile)))
-            {
-                NewFile();
             }
             GUILayout.EndHorizontal();
         }
