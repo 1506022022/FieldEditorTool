@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace FieldEditorTool
@@ -18,10 +20,32 @@ namespace FieldEditorTool
 
         public static Type[] GetDerivedTypes()
         {
-            return typeof(AreaType).Assembly
-                .GetTypes()
-                .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(AreaType)))
+            var baseType = typeof(AreaType);
+            var baseAssembly = baseType.Assembly;
+
+            var assemblies = new List<Assembly> { baseAssembly };
+            assemblies.AddRange(
+                AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => a != baseAssembly)
+            );
+
+            return assemblies
+                .SelectMany(assembly =>
+                {
+                    try
+                    {
+                        return assembly.GetTypes();
+                    }
+                    catch (ReflectionTypeLoadException ex)
+                    {
+                        return ex.Types.Where(t => t != null);
+                    }
+                })
+                .Where(type => type.IsClass
+                            && !type.IsAbstract
+                            && type.IsSubclassOf(baseType))
                 .ToArray();
+
         }
 
         public static Type FindTypeByName(string typeName)

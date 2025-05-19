@@ -35,7 +35,6 @@ namespace FieldEditorTool
 
         enum FileType { Json }
         [field: SerializeField] public string SavePath { get; set; }
-        [field: SerializeField] public string FieldPresetPath { get; private set; }
         [field: SerializeField] public bool UseNavigation { get; private set; }
 
         [SerializeField] FileType fileType;

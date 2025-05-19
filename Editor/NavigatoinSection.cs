@@ -51,8 +51,10 @@ namespace FieldEditorTool
             if (wireframeGenerator == null) return;
 
             GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
             DrawButtonWithIcon("NavMeshModifierVolume Icon.png", "Generate Field", GenerateField);
             DrawButtonWithIcon("NavMeshSurface Icon.png", "Bake Navigation", BakeNavigation);
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
 

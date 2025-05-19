@@ -20,6 +20,7 @@ namespace FieldEditorTool
             elements.Add(settingsSection);
             AddNavigationIfNeeded(elements, settings);
             elements.Add(fileManager);
+            elements.Add(editWindow);
             return elements;
         }
 
@@ -34,6 +35,7 @@ namespace FieldEditorTool
         {
             var elements = new HashSet<IFieldEditorDispose>();
             AddNavigationIfNeeded(elements, settings);
+            elements.Add(editWindow);
             return elements;
         }
 

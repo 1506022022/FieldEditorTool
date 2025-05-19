@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 319c2605050a4534cb438ee1136c52bb, type: 3}
   m_Name: FieldEditorSettings
   m_EditorClassIdentifier: 
-  <SavePath>k__BackingField: "Assets\\0. \uC791\uC5C5\\\uC640\uC774\uC5B4\uD504\uB808\uC784\\FieldEditorSettings.Json"
-  <FieldPresetPath>k__BackingField: CustomNavigationAreas
+  <SavePath>k__BackingField: 
   <UseNavigation>k__BackingField: 1
+  fileType: 0

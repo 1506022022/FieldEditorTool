@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEngine;
@@ -54,17 +55,14 @@ namespace FieldEditorTool
             cell.SetActive(true);
             cell.GetComponent<NavMeshModifierVolume>().area = 0;
         }
-
         void OnReleaseCell(GameObject cell)
         {
             cell.SetActive(false);
         }
-
         void OnDestroyCell(GameObject cell)
         {
             DestroyImmediate(cell);
         }
-
         public void GenerateVoxelWireframe()
         {
             for (int i = 0; i < transform.childCount; i++)
@@ -117,6 +115,7 @@ namespace FieldEditorTool
                     data.Area = (AreaType)Activator.CreateInstance(type);
                 }
             }
+            OrderChilds();
         }
 
         public CellDataComponent FindCellByIndex(int x, int z)
@@ -125,7 +124,34 @@ namespace FieldEditorTool
             if (transform.childCount <= index) return null;
             return transform.GetChild(index).GetComponent<CellDataComponent>();
         }
+        void OrderChilds()
+        {
+            List<Transform> list = new List<Transform>();
 
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                list.Add(transform.GetChild(i));
+            }
+
+            list.Sort((a, b) =>
+            {
+                var compA = a.GetComponent<CellDataComponent>();
+                var compB = b.GetComponent<CellDataComponent>();
+
+                var indexA = compA.Index;
+                var indexB = compB.Index;
+
+                int priorityA = !a.gameObject.activeSelf ? int.MaxValue : indexA.y * bounds.x + indexA.x;
+                int priorityB = !b.gameObject.activeSelf ? int.MaxValue : indexB.y * bounds.x + indexB.x;
+
+                return priorityA.CompareTo(priorityB);
+            });
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                list[i].SetSiblingIndex(i);
+            }
+        }
         public void ClearPreview()
         {
             CellPool.Clear();
@@ -141,6 +167,5 @@ namespace FieldEditorTool
         }
 
         static Material DefaultMaterial;
-
     }
 }
