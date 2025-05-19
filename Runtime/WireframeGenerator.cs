@@ -38,7 +38,13 @@ namespace FieldEditorTool
             modifier.size = Vector3.right + Vector3.up + Vector3.forward * bounds.y;
             modifier.center = Vector3.back * (instance.transform.localPosition.y + bounds.y / 2f);
 
-            DefaultMaterial ??= instance.GetComponent<Renderer>()?.sharedMaterial;
+            if (DefaultMaterial == null)
+            {
+                var material = GameObject.CreatePrimitive(PrimitiveType.Quad).GetComponent<Renderer>();
+                DefaultMaterial = material.sharedMaterial;
+                GameObject.DestroyImmediate(material);
+            }
+            instance.GetComponent<Renderer>().material = DefaultMaterial;
 
             return instance;
         }
