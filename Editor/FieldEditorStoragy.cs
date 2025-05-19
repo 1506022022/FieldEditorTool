@@ -1,4 +1,3 @@
-using PlasticGui.WorkspaceWindow;
 using System.Collections.Generic;
 
 namespace FieldEditorTool

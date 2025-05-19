@@ -9,7 +9,7 @@ namespace FieldEditorTool
             var path = $"Packages/com.1506022022.field_editor_tool/Resources/{nameof(CustomNavigationAreas)}.asset";
             var asset = AssetDatabase.LoadAssetAtPath<CustomNavigationAreas>(path);
 
-            for(int i= 0; i<32;i++)
+            for (int i = 0; i < 32; i++)
             {
                 if (string.IsNullOrEmpty(asset.AreaTypes[i]))
                 {

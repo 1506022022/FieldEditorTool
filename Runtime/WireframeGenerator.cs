@@ -3,7 +3,6 @@ using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
-using UnityEngine.Rendering;
 
 namespace FieldEditorTool
 {
@@ -38,6 +37,8 @@ namespace FieldEditorTool
             var modifier = instance.GetComponent<NavMeshModifierVolume>();
             modifier.size = Vector3.right + Vector3.up + Vector3.forward * bounds.y;
             modifier.center = Vector3.back * (instance.transform.localPosition.y + bounds.y / 2f);
+
+            DefaultMaterial ??= instance.GetComponent<Renderer>()?.sharedMaterial;
 
             return instance;
         }
@@ -133,16 +134,7 @@ namespace FieldEditorTool
             }
         }
 
-        static Material DefaultMaterial
-        {
-            get
-            {
-                var pipeline = GraphicsSettings.currentRenderPipeline?.GetType().ToString();
-                var shader = Shader.Find("Standard") ??
-                    Shader.Find("Universal Render Pipeline/Lit") ??
-                    Shader.Find("HDRP/Lit");
-                return new Material(shader);
-            }
-        }
+        static Material DefaultMaterial;
+
     }
 }

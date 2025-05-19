@@ -24,6 +24,11 @@ namespace FieldEditorTool
         void DrawBoundEditor()
         {
             wireframeGenerator.bounds = EditorGUILayout.Vector3IntField("Bound", wireframeGenerator.bounds);
+            var clamp = wireframeGenerator.bounds;
+            clamp.x = Mathf.Max(clamp.x, 1);
+            clamp.y = Mathf.Max(clamp.y, 1);
+            clamp.z = Mathf.Max(clamp.z, 1);
+            wireframeGenerator.bounds = clamp;
             SyncNavMeshBoundsWithGenerator();
         }
 
@@ -111,7 +116,7 @@ namespace FieldEditorTool
                 for (int x = 0; x < wireframeGenerator.bounds.x; x++)
                 {
                     var elements = wireframeGenerator.FindCellByIndex(x, z).GetComponents<IFieldEditorElement>();
-                    var json = string.Join('\n', elements.Select(x => x.GetJson()).ToArray());
+                    var json = string.Join('\n', elements.Where(x => !string.IsNullOrEmpty(x.GetJson())).Select(x => x.GetJson()).ToArray());
                     lines.Add(json);
                 }
             }
