@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "displayName": "FieldEditorTool",
   "description": "...",
-  "unity": "2023.2",
+  "unity": "2022.2",
   "unityRelease": "0b5",
   "documentationUrl": "https://github.com/1506022022/FieldEditorTool/blob/main/README.md",
   "changelogUrl": "https://github.com/1506022022/FieldEditorTool/blob/main/README.md",
   "licensesUrl": "https://github.com/1506022022/FieldEditorTool/blob/main/LICENSE",
   "dependencies": {
+"com.unity.ai.navigation": "1.1.1"
  },
  "keywords": [
     "FieldEditorTool"

@@ -1,0 +1,19 @@
+{
+    "name": "1506022022.FieldEditorTool.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9d4858eecb193e648a0bc1b94ca363ce",
+        "GUID:8c4dd21966739024fbd72155091d199e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
