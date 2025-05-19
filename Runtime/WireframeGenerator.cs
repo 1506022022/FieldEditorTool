@@ -110,7 +110,7 @@ namespace FieldEditorTool
                     var modifier = cell.GetComponent<NavMeshModifierVolume>();
 
                     modifier.center = Vector3.forward * (0.1f + cell.transform.localPosition.y - bounds.y / 2f);
-
+                    modifier.size = Vector3.right + Vector3.up + Vector3.forward * cellSize * bounds.y;
                     data.Index = new Vector2Int(x, z);
                     Type type = AreaType.GetDerivedTypes()[0];
                     data.HeaderType = type?.Name ?? "Unknown";
