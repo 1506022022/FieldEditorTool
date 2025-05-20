@@ -104,25 +104,25 @@ namespace FieldEditorTool
                     var cell = CellPool.Get();
                     cell.transform.position = centers[x, z];
 
-                    var data = cell.GetComponent<CellDataComponent>();
+                    var data = cell.GetComponent<DataComponent>();
                     var modifier = cell.GetComponent<NavMeshModifierVolume>();
 
                     modifier.center = Vector3.forward * (0.1f + cell.transform.localPosition.y - bounds.y / 2f);
                     modifier.size = Vector3.right + Vector3.up + Vector3.forward * cellSize * bounds.y;
                     data.Index = new Vector2Int(x, z);
-                    Type type = AreaType.GetDerivedTypes()[0];
+                    Type type = Types.GetDerivedTypes<AreaData>()[0];
                     data.HeaderType = type?.Name ?? "Unknown";
-                    data.Area = (AreaType)Activator.CreateInstance(type);
+                    data.Area = (AreaData)Activator.CreateInstance(type);
                 }
             }
             OrderChilds();
         }
 
-        public CellDataComponent FindCellByIndex(int x, int z)
+        public DataComponent FindCellByIndex(int x, int z)
         {
             int index = z * bounds.x + x;
             if (transform.childCount <= index) return null;
-            return transform.GetChild(index).GetComponent<CellDataComponent>();
+            return transform.GetChild(index).GetComponent<DataComponent>();
         }
         void OrderChilds()
         {
@@ -135,8 +135,8 @@ namespace FieldEditorTool
 
             list.Sort((a, b) =>
             {
-                var compA = a.GetComponent<CellDataComponent>();
-                var compB = b.GetComponent<CellDataComponent>();
+                var compA = a.GetComponent<DataComponent>();
+                var compB = b.GetComponent<DataComponent>();
 
                 var indexA = compA.Index;
                 var indexB = compB.Index;

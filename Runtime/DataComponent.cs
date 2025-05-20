@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FieldEditorTool
 {
-    public class CellDataComponent : MonoBehaviour, IFieldEditorElement
+    public class DataComponent : MonoBehaviour, IFieldEditorElement
     {
-        AreaType area = new();
+        AreaData area = new();
 
         public Vector2Int Index
         {
@@ -18,7 +18,7 @@ namespace FieldEditorTool
             set => area.HeaderType = value;
         }
 
-        public AreaType Area
+        public AreaData Area
         {
             get => area;
             set

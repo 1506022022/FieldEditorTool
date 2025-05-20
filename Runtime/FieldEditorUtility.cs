@@ -4,16 +4,16 @@ namespace FieldEditorTool
 {
     public static class FieldEditorUtility
     {
-        public static CustomNavigationAreas GetCustomNavigationAreas()
+        public static NavigationAreasCustomData GetCustomNavigationAreas()
         {
-            var path = $"Packages/com.1506022022.field_editor_tool/Resources/{nameof(CustomNavigationAreas)}.asset";
-            var asset = AssetDatabase.LoadAssetAtPath<CustomNavigationAreas>(path);
+            var path = $"Packages/com.1506022022.field_editor_tool/Resources/{nameof(NavigationAreasCustomData)}.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<NavigationAreasCustomData>(path);
 
             for (int i = 0; i < 32; i++)
             {
                 if (string.IsNullOrEmpty(asset.AreaTypes[i]))
                 {
-                    asset.AreaTypes[i] = AreaType.GetDerivedTypeNames()[0];
+                    asset.AreaTypes[i] = Types.GetDerivedTypeNames<AreaData>()[0];
                     EditorUtility.SetDirty(asset);
                 }
             }
@@ -22,8 +22,8 @@ namespace FieldEditorTool
         }
         public static object FromJson(string json)
         {
-            var type = JsonUtility.FromJson<AreaType>(json).HeaderType;
-            var instance = JsonUtility.FromJson(json, AreaType.FindTypeByName(type));
+            var type = JsonUtility.FromJson<AreaData>(json).HeaderType;
+            var instance = JsonUtility.FromJson(json, Types.FindTypeByName<AreaData>(type));
             return instance;
         }
     }

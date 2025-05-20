@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace FieldEditorTool
 {
-    [CreateAssetMenu(menuName = "ScriptableObject/CustomNavigationAreas")]
-    public class CustomNavigationAreas : ScriptableObject
+    [CreateAssetMenu(menuName = "ScriptableObject/NavigationAreasCustomData")]
+    public class NavigationAreasCustomData : ScriptableObject
     {
         public string[] AreaTypes = new string[32];
 

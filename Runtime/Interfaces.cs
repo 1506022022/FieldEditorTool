@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 namespace FieldEditorTool
 {
     public interface IFieldEditorDispose
@@ -23,6 +24,6 @@ namespace FieldEditorTool
     }
     public interface IFieldEditorFile
     {
-        public void OnReadFile(List<AreaType> data);
+        public void OnReadFile(List<AreaData> areaData);
     }
 }

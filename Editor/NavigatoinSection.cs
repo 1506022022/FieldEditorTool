@@ -126,7 +126,7 @@ namespace FieldEditorTool
             return string.Join("\n", lines);
         }
 
-        void IFieldEditorFile.OnReadFile(List<AreaType> areaData)
+        void IFieldEditorFile.OnReadFile(List<AreaData> areaData)
         {
             if (wireframeGenerator == null) return;
 

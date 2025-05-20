@@ -62,12 +62,12 @@ namespace FieldEditorTool
         void OnLoadFile(string path)
         {
             var data = File.ReadAllLines(path);
-            var list = new List<AreaType>();
+            var list = new List<AreaData>();
 
             for (int i = 0; i < data.Length; i++)
             {
-                var type = JsonUtility.FromJson<AreaType>(data[i]).HeaderType;
-                list.Add((AreaType)JsonUtility.FromJson(data[i], AreaType.FindTypeByName(type)));
+                var type = JsonUtility.FromJson<EntityData>(data[i]).HeaderType;
+                list.Add((AreaData)JsonUtility.FromJson(data[i], Types.FindTypeByName<AreaData>(type)));
             }
 
             foreach (var item in files)

@@ -5,20 +5,20 @@ using UnityEngine;
 
 namespace FieldEditorTool
 {
-    [CustomEditor(typeof(CellDataComponent))]
-    internal class CellDataEditor : Editor
+    [CustomEditor(typeof(DataComponent))]
+    internal class DataEditor : Editor
     {
         FieldInfo[] areaFields;
         string[] areaTypeNames;
         Type[] areaTypes;
-        CellDataComponent cellData;
+        DataComponent cellData;
 
         void OnEnable()
         {
-            areaTypeNames = AreaType.GetDerivedTypeNames();
-            cellData = (CellDataComponent)target;
-            areaTypes = AreaType.GetDerivedTypes();
-            areaFields = AreaType.FindTypeByName(cellData.HeaderType)?.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            areaTypeNames = Types.GetDerivedTypeNames<AreaData>();
+            cellData = (DataComponent)target;
+            areaTypes = Types.GetDerivedTypes<AreaData>();
+            areaFields = Types.FindTypeByName<AreaData>(cellData.HeaderType)?.GetFields(BindingFlags.Public | BindingFlags.Instance);
         }
 
         public override void OnInspectorGUI()
@@ -41,8 +41,8 @@ namespace FieldEditorTool
             {
                 if (TryCreateAreaInstance(cellData.HeaderType, out object newAreaInstance))
                 {
-                    cellData.Area = (AreaType)newAreaInstance;
-                    areaFields = AreaType.FindTypeByName(cellData.HeaderType).GetFields(BindingFlags.Public | BindingFlags.Instance);
+                    cellData.Area = (AreaData)newAreaInstance;
+                    areaFields = Types.FindTypeByName<AreaData>(cellData.HeaderType).GetFields(BindingFlags.Public | BindingFlags.Instance);
                     EditorUtility.SetDirty(target);
                 }
                 else
@@ -62,7 +62,7 @@ namespace FieldEditorTool
             instance = null;
             try
             {
-                var type = AreaType.FindTypeByName(typeName);
+                var type = Types.FindTypeByName<AreaData>(typeName);
                 instance = Activator.CreateInstance(type);
                 return true;
             }

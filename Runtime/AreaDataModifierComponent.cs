@@ -5,17 +5,12 @@ namespace FieldEditorTool
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(CellDataComponent))]
+    [RequireComponent(typeof(DataComponent))]
     [RequireComponent(typeof(NavMeshModifierVolume))]
-    internal class CellDataModifier : MonoBehaviour, IFieldEditorElement
+    internal class AreaDataModifierComponent : MonoBehaviour
     {
         NavMeshModifierVolume modifierVolume;
-        CellDataComponent cellData;
-
-        string IFieldEditorElement.GetJson()
-        {
-            return null;
-        }
+        DataComponent cellData;
 
         void UpdateHeaderType()
         {
@@ -34,7 +29,7 @@ namespace FieldEditorTool
             modifierVolume ??= GetComponent<NavMeshModifierVolume>();
             if (modifierVolume == null) return;
 
-            cellData ??= GetComponent<CellDataComponent>();
+            cellData ??= GetComponent<DataComponent>();
             if (cellData == null) return;
 
             UpdateHeaderType();

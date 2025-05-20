@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FieldEditorTool
 {
-    [CustomEditor(typeof(CustomNavigationAreas))]
+    [CustomEditor(typeof(NavigationAreasCustomData))]
     internal class CustomNavigationAreasEditor : Editor
     {
         string[] areaTypeNames;
@@ -36,7 +36,7 @@ namespace FieldEditorTool
 
         void OnEnable()
         {
-            areaTypeNames = AreaType.GetDerivedTypeNames();
+            areaTypeNames = Types.GetDerivedTypeNames<AreaData>();
             InitializeAreasList();
         }
 
@@ -87,7 +87,7 @@ namespace FieldEditorTool
 
             GUI.enabled = guiEnabledBackup && allowChangeType;
 
-            var navData = (CustomNavigationAreas)target;
+            var navData = (NavigationAreasCustomData)target;
             int currentIndex = Mathf.Max(0, Array.IndexOf(areaTypeNames, navData.AreaTypes[index]));
             int selectedIndex = EditorGUI.Popup(typeRect, currentIndex, areaTypeNames);
 

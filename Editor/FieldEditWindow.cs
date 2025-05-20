@@ -67,7 +67,7 @@ namespace FieldEditorTool
             var expansionPosition = subWindow.position;
             nextPosition.width = expansionPosition.width;
             subWindow.position = nextPosition;
-            subWindow.name = nameof(CustomNavigationAreas);
+            subWindow.name = nameof(NavigationAreasCustomData);
         }
 
         Rect GetSidePosition()
