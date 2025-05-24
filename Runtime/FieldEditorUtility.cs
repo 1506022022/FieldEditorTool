@@ -13,7 +13,7 @@ namespace FieldEditorTool
             {
                 if (string.IsNullOrEmpty(asset.AreaTypes[i]))
                 {
-                    asset.AreaTypes[i] = Types.GetDerivedTypeNames<AreaData>()[0];
+                    asset.AreaTypes[i] = Types.GetDerivedTypeNames<CellData>()[0];
                     EditorUtility.SetDirty(asset);
                 }
             }
@@ -22,8 +22,8 @@ namespace FieldEditorTool
         }
         public static object FromJson(string json)
         {
-            var type = JsonUtility.FromJson<AreaData>(json).HeaderType;
-            var instance = JsonUtility.FromJson(json, Types.FindTypeByName<AreaData>(type));
+            var type = JsonUtility.FromJson<CellData>(json).HeaderType;
+            var instance = JsonUtility.FromJson(json, Types.FindTypeByName<CellData>(type));
             return instance;
         }
     }

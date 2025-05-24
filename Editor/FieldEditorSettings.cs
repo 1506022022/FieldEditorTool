@@ -33,11 +33,19 @@ namespace FieldEditorTool
 
         internal event Action OnValidateEvent;
 
-        enum FileType { Json }
-        [field: SerializeField] public string SavePath { get; set; }
+        public enum FileType { Json }
+        [field: SerializeField] public string SaveFolder { get; set; }
+        [SerializeField] private string fileName;
+        public string FileName
+        {
+            get => string.IsNullOrEmpty(fileName) ? "Unknown" : fileName;
+            set => fileName = value;
+        }
+        public string FileNameWithExtension => $"{FileName}.{Extension}";
+        public string SavePath => Path.Combine(SaveFolder, FileNameWithExtension);
         [field: SerializeField] public bool UseNavigation { get; private set; }
 
-        [SerializeField] FileType fileType;
+        [field: SerializeField] public FileType Extension { get; private set; }
 
         void OnValidate()
         {
@@ -47,14 +55,14 @@ namespace FieldEditorTool
 
         void ValidateSavePath()
         {
-            if (string.IsNullOrEmpty(SavePath))
+            if (string.IsNullOrEmpty(SaveFolder))
                 return;
 
-            var directoryPath = Path.GetDirectoryName(SavePath);
-            var fileName = Path.GetFileNameWithoutExtension(SavePath);
-            var extension = fileType.ToString();
+            var directoryPath = Path.GetDirectoryName(SaveFolder);
+            var fileName = Path.GetFileNameWithoutExtension(SaveFolder);
+            var extension = this.Extension.ToString();
 
-            SavePath = Path.Combine(directoryPath, $"{fileName}.{extension}");
+            SaveFolder = Path.Combine(directoryPath, $"{fileName}.{extension}");
         }
     }
 }

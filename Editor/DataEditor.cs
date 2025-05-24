@@ -8,51 +8,47 @@ namespace FieldEditorTool
     [CustomEditor(typeof(DataComponent))]
     internal class DataEditor : Editor
     {
-        FieldInfo[] areaFields;
-        string[] areaTypeNames;
-        Type[] areaTypes;
-        DataComponent cellData;
+        FieldInfo[] fields;
+        string[] entityNames;
+        Type[] entityTypes;
+        DataComponent data;
 
         void OnEnable()
         {
-            areaTypeNames = Types.GetDerivedTypeNames<AreaData>();
-            cellData = (DataComponent)target;
-            areaTypes = Types.GetDerivedTypes<AreaData>();
-            areaFields = Types.FindTypeByName<AreaData>(cellData.HeaderType)?.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            data = (DataComponent)target;
+            entityNames = Types.GetDerivedTypeNames<EntityData>();
+            entityTypes = Types.GetDerivedTypes<EntityData>();
+            fields = Types.FindTypeByName<EntityData>(data.HeaderType)?.GetFields(BindingFlags.Public | BindingFlags.Instance);
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            GUI.enabled = false;
-            EditorGUILayout.Vector2Field(nameof(cellData.Index), cellData.Index);
-            GUI.enabled = true;
-
             EditorGUILayout.Space(25);
 
-            int currentTypeIndex = Mathf.Max(Array.IndexOf(areaTypeNames, cellData.HeaderType), 0);
-            currentTypeIndex = Mathf.Max(EditorGUILayout.Popup("Area Type", currentTypeIndex, areaTypeNames), 0);
-            cellData.HeaderType = areaTypes[currentTypeIndex].Name;
+            int currentTypeIndex = Mathf.Max(Array.IndexOf(entityNames, data.HeaderType), 0);
+            currentTypeIndex = Mathf.Max(EditorGUILayout.Popup("Entity Type", currentTypeIndex, entityNames), 0);
+            data.HeaderType = entityTypes[currentTypeIndex].Name;
 
             EditorGUILayout.Space(15);
 
-            if (cellData.Area == null || cellData.Area.GetType().Name != cellData.HeaderType)
+            if (data.Data == null || data.Data.GetType().Name != data.HeaderType)
             {
-                if (TryCreateAreaInstance(cellData.HeaderType, out object newAreaInstance))
+                if (TryCreateAreaInstance(data.HeaderType, out object newInstance))
                 {
-                    cellData.Area = (AreaData)newAreaInstance;
-                    areaFields = Types.FindTypeByName<AreaData>(cellData.HeaderType).GetFields(BindingFlags.Public | BindingFlags.Instance);
+                    data.Data = (EntityData)newInstance;
+                    fields = Types.FindTypeByName<EntityData>(data.HeaderType).GetFields(BindingFlags.Public | BindingFlags.Instance);
                     EditorUtility.SetDirty(target);
                 }
                 else
                 {
-                    EditorGUILayout.HelpBox($"Unable to instantiate class '{cellData.HeaderType}'", MessageType.Error);
+                    EditorGUILayout.HelpBox($"Unable to instantiate class '{data.HeaderType}'", MessageType.Error);
                     return;
                 }
             }
 
-            EditorGUILayout.LabelField($"Custom Fields for {cellData.HeaderType}", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Custom Fields for {data.HeaderType}", EditorStyles.boldLabel);
 
             DrawCustomFields();
         }
@@ -62,7 +58,7 @@ namespace FieldEditorTool
             instance = null;
             try
             {
-                var type = Types.FindTypeByName<AreaData>(typeName);
+                var type = Types.FindTypeByName<EntityData>(typeName);
                 instance = Activator.CreateInstance(type);
                 return true;
             }
@@ -74,12 +70,12 @@ namespace FieldEditorTool
 
         void DrawCustomFields()
         {
-            foreach (var field in areaFields)
+            foreach (var field in fields)
             {
                 if (field.GetCustomAttribute<HideInInspector>() != null)
                     continue;
 
-                object value = field.GetValue(cellData.Area);
+                object value = field.GetValue(data.Data);
                 Type fieldType = field.FieldType;
 
                 EditorGUI.BeginChangeCheck();
@@ -94,13 +90,14 @@ namespace FieldEditorTool
                     Type t when t == typeof(GameObject) => EditorGUILayout.ObjectField(field.Name, (GameObject)value, typeof(GameObject), true),
                     Type t when t == typeof(Vector3) => EditorGUILayout.Vector3Field(field.Name, (Vector3)value),
                     Type t when t == typeof(Vector3Int) => EditorGUILayout.Vector3IntField(field.Name, (Vector3Int)value),
+                    Type t when t == typeof(Quaternion) => EditorGUILayout.Vector4Field(field.Name, (Vector4)value),
                     _ => DrawUnsupportedField(field.Name, fieldType)
                 };
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(cellData, "Edit Area Class Field");
-                    field.SetValue(cellData.Area, value);
+                    Undo.RecordObject(data, "Edit Area Class Field");
+                    field.SetValue(data.Data, value);
                 }
             }
         }

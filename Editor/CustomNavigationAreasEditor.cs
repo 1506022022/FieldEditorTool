@@ -36,7 +36,7 @@ namespace FieldEditorTool
 
         void OnEnable()
         {
-            areaTypeNames = Types.GetDerivedTypeNames<AreaData>();
+            areaTypeNames = Types.GetDerivedTypeNames<CellData>();
             InitializeAreasList();
         }
 

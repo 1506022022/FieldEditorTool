@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEngine;
@@ -43,7 +42,7 @@ namespace FieldEditorTool
             {
                 var material = GameObject.CreatePrimitive(PrimitiveType.Quad).GetComponent<Renderer>();
                 DefaultMaterial = material.sharedMaterial;
-                GameObject.DestroyImmediate(material);
+                GameObject.DestroyImmediate(material.gameObject);
             }
             instance.GetComponent<Renderer>().material = DefaultMaterial;
 
@@ -104,18 +103,17 @@ namespace FieldEditorTool
                     var cell = CellPool.Get();
                     cell.transform.position = centers[x, z];
 
-                    var data = cell.GetComponent<DataComponent>();
+                    var entity = cell.GetComponent<DataComponent>();
                     var modifier = cell.GetComponent<NavMeshModifierVolume>();
 
                     modifier.center = Vector3.forward * (0.1f + cell.transform.localPosition.y - bounds.y / 2f);
                     modifier.size = Vector3.right + Vector3.up + Vector3.forward * cellSize * bounds.y;
-                    data.Index = new Vector2Int(x, z);
-                    Type type = Types.GetDerivedTypes<AreaData>()[0];
-                    data.HeaderType = type?.Name ?? "Unknown";
-                    data.Area = (AreaData)Activator.CreateInstance(type);
+                    Type type = Types.GetDerivedTypes<CellData>()[0];
+                    entity.HeaderType = type?.Name ?? "Unknown";
+                    entity.Data = (CellData)Activator.CreateInstance(type);
+                    ((CellData)entity.Data).Index = new Vector2Int(x, z);
                 }
             }
-            OrderChilds();
         }
 
         public DataComponent FindCellByIndex(int x, int z)
@@ -123,34 +121,6 @@ namespace FieldEditorTool
             int index = z * bounds.x + x;
             if (transform.childCount <= index) return null;
             return transform.GetChild(index).GetComponent<DataComponent>();
-        }
-        void OrderChilds()
-        {
-            List<Transform> list = new List<Transform>();
-
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                list.Add(transform.GetChild(i));
-            }
-
-            list.Sort((a, b) =>
-            {
-                var compA = a.GetComponent<DataComponent>();
-                var compB = b.GetComponent<DataComponent>();
-
-                var indexA = compA.Index;
-                var indexB = compB.Index;
-
-                int priorityA = !a.gameObject.activeSelf ? int.MaxValue : indexA.y * bounds.x + indexA.x;
-                int priorityB = !b.gameObject.activeSelf ? int.MaxValue : indexB.y * bounds.x + indexB.x;
-
-                return priorityA.CompareTo(priorityB);
-            });
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                list[i].SetSiblingIndex(i);
-            }
         }
         public void ClearPreview()
         {

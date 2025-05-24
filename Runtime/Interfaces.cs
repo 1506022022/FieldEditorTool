@@ -24,6 +24,6 @@ namespace FieldEditorTool
     }
     public interface IFieldEditorFile
     {
-        public void OnReadFile(List<AreaData> areaData);
+        public void OnReadFile(List<EntityData> areaData);
     }
 }

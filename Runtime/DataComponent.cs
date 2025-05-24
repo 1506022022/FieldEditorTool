@@ -1,38 +1,38 @@
+using System;
+using System.Linq;
 using UnityEngine;
 
 namespace FieldEditorTool
 {
     public class DataComponent : MonoBehaviour, IFieldEditorElement
     {
-        AreaData area = new();
-
-        public Vector2Int Index
-        {
-            get => area.Index;
-            set => area.Index = value;
-        }
+        EntityData data = new();
 
         public string HeaderType
         {
-            get => area.HeaderType;
-            set => area.HeaderType = value;
+            get => data.HeaderType;
+            set => data.HeaderType = value;
         }
 
-        public AreaData Area
+        public EntityData Data
         {
-            get => area;
+            get => data;
             set
             {
-                var currentIndex = area.Index;
-                area = value;
-                area.Index = currentIndex;
-                area.HeaderType = area.GetType().Name;
+                data = value;
+                data.HeaderType = data.GetType().Name;
             }
+        }
+
+        EntityData GetDefaultData()
+        {
+            return (EntityData)Activator.CreateInstance(Types.GetDerivedTypes<EntityData>().First());
         }
 
         string IFieldEditorElement.GetJson()
         {
-            return JsonUtility.ToJson(area);
+            if (data.GetType() == typeof(EntityData)) Data = GetDefaultData();
+            return JsonUtility.ToJson(data);
         }
     }
 }

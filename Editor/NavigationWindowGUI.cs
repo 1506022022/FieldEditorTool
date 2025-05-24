@@ -6,19 +6,96 @@ using UnityEngine;
 
 namespace FieldEditorTool
 {
-    internal class NavigationSection : IFieldEditorUI, IFieldEditorInitialize, IFieldEditorDispose, IFieldEditorElement, IFieldEditorFile
+    internal class NavigationWindowGUI : BaseWindowGUI
     {
-        private WireframeGenerator wireframeGenerator;
-        private NavMeshSurface navMeshSurface;
-        private bool cellGizmo = true;
+        EditorWindow navigation;
+        EditorWindow subWindow;
+        WireframeGenerator wireframeGenerator;
+        NavMeshSurface navMeshSurface;
+        bool cellGizmo = true;
 
-        void IFieldEditorUI.OnGUI()
+        protected override void OnGUI_Child()
         {
             DrawBoundEditor();
             GUILayout.Space(10);
             DrawDebugToggles();
             GUILayout.Space(10);
             DrawActionButtons();
+            GUILayout.Space(10);
+            DrawSideWindowButton();
+        }
+
+        public void DrawSideWindowButton()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (Style.Button(nameof(OpenSide)))
+            {
+                OpenSide();
+            }
+            if (Style.Button(nameof(CloseSide)))
+            {
+                CloseSide();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+
+        void CloseSide()
+        {
+            navigation?.Close();
+            subWindow?.Close();
+            navigation = null;
+            subWindow = null;
+        }
+        void OpenSide()
+        {
+            CloseSide();
+            EditorApplication.ExecuteMenuItem("Window/AI/Navigation");
+            Rect nextPosition = new Rect();
+            if (EditorWindow.focusedWindow.titleContent.text == "Navigation")
+            {
+                navigation = EditorWindow.focusedWindow;
+                var navigationRect = navigation.position;
+                navigationRect.position = Vector3.zero;
+                navigation.position = navigationRect;
+
+                nextPosition = new Rect(
+                    navigationRect.xMax + 10,
+                    navigationRect.y,
+                    navigationRect.width,
+                    navigationRect.height
+                );
+            }
+
+            subWindow = ScriptableObjectEditorWindow.ShowWindow(FieldEditorUtility.GetCustomNavigationAreas());
+            var expansionPosition = subWindow.position;
+            nextPosition.width = expansionPosition.width;
+            subWindow.position = nextPosition;
+            subWindow.name = nameof(NavigationAreasCustomData);
+        }
+
+        Rect GetSidePosition()
+        {
+            Rect sideRect = new Rect();
+            var navigationRect = navigation.position;
+            var subWindowRect = subWindow.position;
+
+            sideRect = new Rect(
+                navigationRect.xMax + 10,
+                navigationRect.y,
+                navigationRect.width,
+                navigationRect.height
+            );
+
+            sideRect = new Rect(
+
+                subWindowRect.xMin - 10,
+                navigationRect.y,
+                navigationRect.width,
+                navigationRect.height
+            );
+            return sideRect;
         }
 
         void DrawBoundEditor()
@@ -78,11 +155,11 @@ namespace FieldEditorTool
             navMeshSurface.BuildNavMesh();
         }
 
-        void IFieldEditorInitialize.Initialize()
+        protected override void Initialize_Child()
         {
             var prefabPath = "Packages/com.1506022022.field_editor_tool/Resources/WireframeGenerator.prefab";
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            var instance = GameObject.Instantiate(prefab);
+            var instance = GameObject.Instantiate(prefab, root);
 
             wireframeGenerator = instance.GetComponent<WireframeGenerator>();
             navMeshSurface = instance.GetComponent<NavMeshSurface>();
@@ -97,51 +174,29 @@ namespace FieldEditorTool
             navMeshSurface.center = navMeshSurface.size / 2f + Vector3.down * 0.1f;
         }
 
-        void IFieldEditorDispose.Dispose()
+        protected override void Dispose_Child()
         {
-            if (wireframeGenerator?.gameObject != null)
-            {
-                GameObject.DestroyImmediate(wireframeGenerator.gameObject);
-            }
+            CloseSide();
         }
 
-        string IFieldEditorElement.GetJson()
-        {
-            if (wireframeGenerator == null || wireframeGenerator.transform.childCount == 0)
-            {
-                return string.Empty;
-            }
-
-            var lines = new List<string>();
-            for (int z = 0; z < wireframeGenerator.bounds.z; z++)
-            {
-                for (int x = 0; x < wireframeGenerator.bounds.x; x++)
-                {
-                    var elements = wireframeGenerator.FindCellByIndex(x, z).GetComponents<IFieldEditorElement>();
-                    var json = string.Join('\n', elements.Where(x => !string.IsNullOrEmpty(x.GetJson())).Select(x => x.GetJson()).ToArray());
-                    lines.Add(json);
-                }
-            }
-
-            return string.Join("\n", lines);
-        }
-
-        void IFieldEditorFile.OnReadFile(List<AreaData> areaData)
+        protected override void OnReadFile_Child(List<EntityData> areaData)
         {
             if (wireframeGenerator == null) return;
 
+            List<CellData> list = areaData.Where(x => x is CellData).Select(x => x as CellData).ToList();
+
             wireframeGenerator.ClearPreview();
 
-            int maxX = areaData.Count == 0 ? 1 : areaData.Max(a => a.Index.x) + 1;
-            int maxZ = areaData.Count == 0 ? 1 : areaData.Max(a => a.Index.y) + 1;
+            int maxX = areaData.Count == 0 ? 1 : list.Max(a => a.Index.x) + 1;
+            int maxZ = areaData.Count == 0 ? 1 : list.Max(a => a.Index.y) + 1;
             wireframeGenerator.bounds = new Vector3Int(maxX, 1, maxZ);
 
             GenerateField();
 
-            foreach (var area in areaData)
+            foreach (var area in list)
             {
                 var cell = wireframeGenerator.FindCellByIndex(area.Index.x, area.Index.y);
-                cell.Area = area;
+                cell.Data = area;
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,100 +9,83 @@ namespace FieldEditorTool
 {
     internal class FieldEditor : EditorWindow
     {
-        static FieldEditorSettings settings => FieldEditorSettings.Instance;
-        static HashSet<IFieldEditorInitialize> initializes = new();
-        static HashSet<IFieldEditorUI> uis = new();
-        static HashSet<IFieldEditorDispose> disposers = new();
-        static HashSet<IFieldEditorElement> elements = new();
-        static HashSet<IFieldEditorFile> files = new();
-
-        [MenuItem("Tools/FieldEditor")]
-        static void ShowWindow()
-        {
-            var window = FieldEditorStorage.GetWindow(settings);
-            window.ShowWindow();
-        }
+        public static HashSet<IFieldEditorInitialize> Initializes { get; private set; } = new();
+        public static HashSet<IFieldEditorUI> UIes { get; private set; } = new();
+        public static HashSet<IFieldEditorDispose> Disposers { get; private set; } = new();
+        public static HashSet<IFieldEditorElement> Elements { get; private set; } = new();
+        public static HashSet<IFieldEditorFile> Files { get; private set; } = new();
 
         void OnGUI()
         {
-            foreach (var ui in uis)
+            foreach (var ui in UIes)
             {
                 ui.OnGUI();
-                GUILayout.Space(20);
+                GUILayout.Space(50);
             }
         }
 
-        void OnEnable()
+        public void OnEnable()
         {
-            UpdateWindow();
             Initialize();
-            var fileManager = FieldEditorStorage.GetFileManager();
+            var fileManager = FieldEditorFileManager.Instance;
 
             fileManager.OnClickSaveButton -= Save;
             fileManager.OnClickSaveButton += Save;
 
             fileManager.OnClickReadButton -= OnLoadFile;
             fileManager.OnClickReadButton += OnLoadFile;
-
-            settings.OnValidateEvent -= OnValidateSettings;
-            settings.OnValidateEvent += OnValidateSettings;
         }
 
         void Save()
         {
-            var json = elements.Select(x => x.GetJson()).ToArray();
-            FieldEditorStorage.GetFileManager().WriteJson(string.Join('\n', json), settings.SavePath);
-        }
-
-        void OnValidateSettings()
-        {
-            UpdateWindow();
-            Initialize();
+            var json = Elements.Select(x => x.GetJson()).ToArray();
+            FieldEditorFileManager.Instance.WriteJson(string.Join('\n', json), FieldEditorSettings.Instance.SavePath);
         }
 
         void OnLoadFile(string path)
         {
-            var data = File.ReadAllLines(path);
-            var list = new List<AreaData>();
+            string[] data = { };
+            try
+            {
+                data = File.ReadAllLines(path);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                return;
+            }
+
+            var list = new List<EntityData>();
 
             for (int i = 0; i < data.Length; i++)
             {
-                var type = JsonUtility.FromJson<EntityData>(data[i]).HeaderType;
-                list.Add((AreaData)JsonUtility.FromJson(data[i], Types.FindTypeByName<AreaData>(type)));
+                var headerType = JsonUtility.FromJson<EntityData>(data[i]).HeaderType;
+                var castType = Types.FindTypeByName<EntityData>(headerType);
+                list.Add((EntityData)JsonUtility.FromJson(data[i], castType));
             }
 
-            foreach (var item in files)
+            foreach (var item in Files)
             {
                 item.OnReadFile(list);
             }
         }
 
-        void UpdateWindow()
-        {
-            uis = FieldEditorStorage.GetUIs(settings);
-            disposers = FieldEditorStorage.GetDisposers(settings);
-            elements = FieldEditorStorage.GetElements(settings);
-            files = FieldEditorStorage.GetFieldEditorFiles(settings);
-            initializes = FieldEditorStorage.GetInitializes(settings);
-        }
-
         void Initialize()
         {
-            foreach (var element in initializes)
+            foreach (var element in Initializes)
             {
                 element.Initialize();
             }
         }
 
-        void OnDisable()
+        public void OnDisable()
         {
             Dispose();
-            settings.OnValidateEvent -= OnValidateSettings;
         }
 
         void Dispose()
         {
-            foreach (var element in disposers)
+            foreach (var element in Disposers)
             {
                 element.Dispose();
             }

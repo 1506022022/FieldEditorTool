@@ -56,25 +56,5 @@ namespace FieldEditorTool
     {
         [HideInInspector] public string HeaderType;
     }
-    public class ActorData : EntityData
-    {
-        public Vector3 Position;
-        public Vector3 Rotation;
-    }
-    public class AreaData : EntityData
-    {
-        [HideInInspector] public Vector2Int Index;
-    }
-
-    public class Walkable : AreaData
-    {
-        public GameObject Who;
-        public Vector3 Where;
-        public float When;
-    }
-
-    public class NotWalkable : AreaData
-    {
-        public string Why;
-    }
+    
 }

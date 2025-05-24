@@ -19,4 +19,9 @@ public static class Style
             GUILayout.Width(50), GUILayout.MaxWidth(80),
             GUILayout.Height(50), GUILayout.MaxHeight(80));
     }
+    public static GUIStyle WrapLabel =>
+    new GUIStyle(GUI.skin.label)
+    {
+        wordWrap = true
+    };
 }
