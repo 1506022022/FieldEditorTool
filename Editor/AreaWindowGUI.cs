@@ -5,6 +5,16 @@ using UnityEngine;
 
 namespace FieldEditorTool
 {
+    internal static class FieldEditorElementUtility
+    {
+        internal static string GetJsonFromChilds(Transform root)
+        {
+            if (root == null) return "";
+            var json = string.Join('\n', root.GetComponentsInChildren<IFieldEditorElement>().Select(x => x.GetJson()).Where(x => !string.IsNullOrEmpty(x)).ToArray());
+            return json;
+        }
+    }
+
     internal abstract class BaseWindowGUI : IFieldEditorUI, IFieldEditorInitialize, IFieldEditorDispose, IFieldEditorElement, IFieldEditorFile
     {
         protected FieldData fieldData { get; private set; }
@@ -21,8 +31,7 @@ namespace FieldEditorTool
         protected abstract void Dispose_Child();
         public string GetJson()
         {
-            var json = string.Join('\n', root.GetComponentsInChildren<IFieldEditorElement>().Select(x => x.GetJson()).Where(x => !string.IsNullOrEmpty(x)).ToArray());
-            return json;
+            return FieldEditorElementUtility.GetJsonFromChilds(root);
         }
 
         public void Initialize()

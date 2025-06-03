@@ -10,8 +10,8 @@ namespace FieldEditorTool
     internal class FieldEditor : EditorWindow
     {
         public static HashSet<IFieldEditorInitialize> Initializes { get; private set; } = new();
-        public static HashSet<IFieldEditorUI> UIes { get; private set; } = new();
         public static HashSet<IFieldEditorDispose> Disposers { get; private set; } = new();
+        public static HashSet<IFieldEditorUI> UIes { get; private set; } = new();
         public static HashSet<IFieldEditorElement> Elements { get; private set; } = new();
         public static HashSet<IFieldEditorFile> Files { get; private set; } = new();
 

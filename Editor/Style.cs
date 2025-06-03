@@ -16,8 +16,17 @@ public static class Style
         var content = new GUIContent(text);
         return GUILayout.Button(content, GUI.skin.button,
             GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true),
-            GUILayout.Width(50), GUILayout.MaxWidth(80),
-            GUILayout.Height(50), GUILayout.MaxHeight(80));
+            GUILayout.Width(50), GUILayout.MaxWidth(100),
+            GUILayout.Height(50), GUILayout.MaxHeight(100));
+    }
+
+    public static bool Button(string text, string tooltip)
+    {
+        var content = new GUIContent(text) { tooltip = tooltip };
+        return GUILayout.Button(content, GUI.skin.button,
+            GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true),
+            GUILayout.Width(50), GUILayout.MaxWidth(100),
+            GUILayout.Height(50), GUILayout.MaxHeight(100));
     }
     public static GUIStyle WrapLabel =>
     new GUIStyle(GUI.skin.label)

@@ -52,6 +52,7 @@ namespace FieldEditorTool
         }
     }
 
+    [Serializable]
     public class EntityData
     {
         [HideInInspector] public string HeaderType;
