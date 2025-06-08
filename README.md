@@ -43,3 +43,13 @@
 - 모든 데이터 작업이 완료되었다면 SaveFile 버튼을 눌러 Json 파일 형식으로 저장합니다.
 
 ![image](https://github.com/user-attachments/assets/aae9514d-1a9e-41d7-a6c6-1449c885ef08)
+
+# Step 5: 결과
+
+- 저장된 파일을 확인하면 아래와 같은 결과물이 만들어져 있습니다.
+
+``` C#
+{"HeaderType":"FieldData","Name":"Unknown","Position":{"x":0.0,"y":0.0,"z":0.0},"Rotation":{"x":0.0,"y":0.0,"z":0.0},"Size":{"x":1,"y":1,"z":1}}
+{"HeaderType":"ActorData","Name":"Cube","Position":{"x":0.0,"y":0.5,"z":-7.260000228881836},"Rotation":{"x":0.0,"y":0.0,"z":0.0}}
+
+```
