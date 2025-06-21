@@ -1,8 +1,8 @@
 {
   "name": "com.1506022022.field_editor_tool",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "displayName": "FieldEditorTool",
-  "description": "1.0.8 : Scene Editor Window \ucd94\uac00\n- Data Component\uac00 \uc52c\uc5d0 \uc800\uc7a5\ub429\ub2c8\ub2e4.",
+  "description": "1.0.8 \n- Scene Editor Window \ucd94\uac00\n- Data Component\uac00 \uc52c\uc5d0 \uc800\uc7a5\ub429\ub2c8\ub2e4.",
   "unity": "2022.2",
   "unityRelease": "0b5",
   "documentationUrl": "https://github.com/1506022022/FieldEditorTool/blob/main/README.md",

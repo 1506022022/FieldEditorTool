@@ -37,29 +37,6 @@ namespace FieldEditorTool
             return JsonUtility.ToJson(data);
         }
 #if UNITY_EDITOR
-        Color gizmoColor = new(0.5f, 0.66f, 0.69f, 0.15f);
-        void OnDrawGizmos()
-        {
-            if (Data is FieldData field)
-            {
-                Gizmos.color = gizmoColor;
-                Vector3 center = field.Position + (Vector3)field.Size / 2f;
-                Vector3 size = field.Size;
-
-                Gizmos.matrix = Matrix4x4.TRS(center, Quaternion.identity, Vector3.one);
-                Gizmos.DrawCube(Vector3.zero, size);
-                Gizmos.color = new Color(gizmoColor.r, gizmoColor.g, gizmoColor.b, 1f);
-                Gizmos.DrawWireCube(Vector3.zero, size);
-            }
-
-            if (Data is ActorData actor)
-            {
-                actor.Position = transform.localPosition;
-                actor.Rotation = transform.localEulerAngles;
-                // actor.Name = gameObject.name;
-            }
-        }
-
         public void OnBeforeSerialize()
         {
             serializeJson = JsonUtility.ToJson(Data);
