@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +19,9 @@ namespace FieldEditorTool
             data = (DataComponent)target;
             entityNames = Types.GetDerivedTypeNames<EntityData>();
             entityTypes = Types.GetDerivedTypes<EntityData>();
-            fields = Types.FindTypeByName<EntityData>(data.HeaderType)?.GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+            var type = Types.FindTypeByName<EntityData>(data.HeaderType);
+            fields = type != null ? GetFieldsRootFirst(type) : Array.Empty<FieldInfo>();
         }
 
         public override void OnInspectorGUI()
@@ -38,7 +41,10 @@ namespace FieldEditorTool
                 if (TryCreateAreaInstance(data.HeaderType, out object newInstance))
                 {
                     data.Data = (EntityData)newInstance;
-                    fields = Types.FindTypeByName<EntityData>(data.HeaderType).GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+                    var type = Types.FindTypeByName<EntityData>(data.HeaderType);
+                    fields = type != null ? GetFieldsRootFirst(type) : Array.Empty<FieldInfo>();
+
                     EditorUtility.SetDirty(target);
                 }
                 else
@@ -90,14 +96,18 @@ namespace FieldEditorTool
                     Type t when t == typeof(GameObject) => EditorGUILayout.ObjectField(field.Name, (GameObject)value, typeof(GameObject), true),
                     Type t when t == typeof(Vector3) => EditorGUILayout.Vector3Field(field.Name, (Vector3)value),
                     Type t when t == typeof(Vector3Int) => EditorGUILayout.Vector3IntField(field.Name, (Vector3Int)value),
-                    Type t when t == typeof(Quaternion) => EditorGUILayout.Vector4Field(field.Name, (Vector4)value),
+                    Type t when t == typeof(LayerMask) => (LayerMask)(EditorGUILayout.LayerField(field.Name, ((LayerMask)value).value)),
+                    Type t when t == typeof(Quaternion) => EditorGUILayout.Vector4Field(field.Name, ((Quaternion)value).eulerAngles),
                     _ => DrawUnsupportedField(field.Name, fieldType)
                 };
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    Undo.RecordObject(data, "Edit Area Class Field");
-                    field.SetValue(data.Data, value);
+                    Undo.RecordObject(data, "Edit EntityData Field");
+
+                    // 타입 호환성 검사
+                    if (field.FieldType.IsAssignableFrom(value?.GetType()))
+                        field.SetValue(data.Data, value);
                 }
             }
         }
@@ -106,6 +116,30 @@ namespace FieldEditorTool
         {
             EditorGUILayout.LabelField(fieldName, $"Unsupported type: {fieldType.Name}");
             return null;
+        }
+
+        /// <summary>
+        /// 루트 클래스부터 자식 클래스 순서대로 필드를 반환
+        /// </summary>
+        static FieldInfo[] GetFieldsRootFirst(Type type)
+        {
+            var result = new List<FieldInfo>();
+            var stack = new Stack<Type>();
+
+            while (type != null && type != typeof(object))
+            {
+                stack.Push(type);
+                type = type.BaseType;
+            }
+
+            while (stack.Count > 0)
+            {
+                var current = stack.Pop();
+                var fields = current.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                result.AddRange(fields);
+            }
+
+            return result.ToArray();
         }
     }
 }
